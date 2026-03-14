@@ -10,7 +10,7 @@ import sys
 
 steps = [
     ("Install dependencies",  [sys.executable, "-m", "pip", "install", "-r", "requirements.txt"]),
-    ("Fetch stock data",      [sys.executable, "scripts/fetch_stock_data.py"]),
+    ("Fetch stock data",      [sys.executable, "scripts/fetch_stock_data.py", "--period", "5d", "--interval", "1d"]),
 ]
 
 for name, cmd in steps:
