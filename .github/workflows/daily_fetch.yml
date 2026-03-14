@@ -3,7 +3,12 @@ name: Daily Stock Data Fetch
 on:
   schedule:
     - cron: '0 3 * * *' # 03:00 UTC (adjust to your timezone)
-  workflow_dispatch: {}
+  workflow_dispatch:
+    inputs:
+      one_year_1m:
+        description: 'Fetch full one-year 1-minute history (slow, heavy).'
+        required: false
+        default: 'false'
 
 permissions:
   contents: write
@@ -24,11 +29,17 @@ jobs:
         run: python -m pip install --upgrade pip && pip install -r requirements.txt
 
       - name: Run daily fetch pipeline
-        run: python run_pipeline.py
+        run: |
+          if [ "${{ github.event.inputs.one_year_1m }}" = "true" ]; then
+            python run_pipeline.py  # one-year step in run_pipeline currently commented; run manually with script
+            python scripts/fetch_stock_data.py --one-year-1m
+          else
+            python run_pipeline.py
+          fi
 
       - name: Commit and push updated data
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add data/*.csv
-          git diff --cached --quiet || (git commit -m "chore: daily update stock data" && git push)
+          git add data/*.csv data/one_year_data/*.csv || true
+          git diff --cached --quiet || (git commit -m "chore: scheduled update stock data" && git push)

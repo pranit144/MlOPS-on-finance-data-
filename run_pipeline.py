@@ -10,7 +10,11 @@ import sys
 
 steps = [
     ("Install dependencies",  [sys.executable, "-m", "pip", "install", "-r", "requirements.txt"]),
-    ("Fetch stock data",      [sys.executable, "scripts/fetch_stock_data.py", "--period", "5d", "--interval", "1d"]),
+    # Standard daily refresh (1 week for the set of tickers)
+    ("Fetch stock data (daily)", [sys.executable, "scripts/fetch_stock_data.py", "--period", "5d", "--interval", "1d"]),
+
+    # Uncomment to run full 1-year 1-minute fetch (expensive and may take time) for all tickers
+    # ("Fetch 1-year 1-minute stock data", [sys.executable, "scripts/fetch_stock_data.py", "--one-year-1m"]),
 ]
 
 for name, cmd in steps:
